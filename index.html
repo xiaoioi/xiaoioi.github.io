@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <title>关于我 - 乔晓啸</title>
+    <link rel="stylesheet" href="https://unpkg.com/mdui@1.0.2/dist/css/mdui.min.css"/>
+    <script src="https://unpkg.com/mdui@1.0.2/dist/js/mdui.min.js"></script>
+    <script>
+      var Blog = 'https://blog.xiao811.eu.org';
+      var GitHub = 'https://github.com/xiao811';
+      var CopyLink = 'https://qxiao.rth1.one'
+    </script>
+    <style>
+      .center-in-center{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            -moz-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            -o-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+    </style>
+  </head>
+  <body class="mdui-theme-layout-dark">
+    <main>
+      <div class="mdui-container">
+        <div class="mdui-card center-in-center">
+          <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src=""/>
+            <div class="mdui-card-header-title">乔晓啸</div>
+            <div class="mdui-card-header-subtitle">学html学了两年半 　 　 　　 　 　 　 　 　</div>
+          </div>
+          <div class="mdui-card-media">
+            <img id="pic" src="https://hudaye.work/img/covers/12.jpg"/>
+            <div class="mdui-card-menu">
+              <button class="mdui-btn mdui-btn-icon mdui-text-color-white" mdui-menu="{target: '#share', align:'right'}">
+                <i class="mdui-icon material-icons">share</i>
+              </button>
+              <ul class="mdui-menu" id="share">
+                <li class="mdui-menu-item">
+                  <a href="javascript:copy(CopyLink);" class="mdui-ripple">复制链接</a>
+                </li>
+            </div>
+            
+            </ul>
+          </div>
+          <div class="mdui-card-primary">
+            <div class="mdui-card-primary-title"></div>
+            <div class="mdui-card-primary-subtitle"></div>
+          </div>
+          <div id="typing" class="mdui-card-content"></div>
+          <div class="mdui-card-actions">
+            <button onclick="window.location.href=Blog;" class="mdui-btn mdui-ripple">Blog</button>
+            <button onclick="window.location.href=GitHub;" class="mdui-btn mdui-ripple">GitHub</button>
+            <button onclick="like();" class="mdui-btn mdui-btn-icon mdui-float-right">
+              <i id="like" class="mdui-icon material-icons">favorite</i>
+            </button>
+          </div>
+        
+        </div>
+      </div>
+    </main>
+    <script>
+      function copy(content){
+        let copy = (e)=>{
+            e.preventDefault();
+            e.clipboardData.setData('text/plain',content);
+            mdui.snackbar({
+              message: '复制成功',
+              position: 'right-top',
+            });
+            document.removeEventListener('copy',copy);
+        }
+        document.addEventListener('copy',copy);
+        document.execCommand("Copy");
+      }
+      ;(win => {
+        class TypeWriter {
+          constructor (config) {
+            var container = config.container;
+            var strs = config.strs;
+            var delay = config.delay || 500;
+            var len = strs.length;
+            function buildWord (str, index) {
+              return index === len ? str.split('') : str.split('').concat('@!del'.repeat(str.length).split('@').slice(1));
+            }
+            function writeWord (word) {
+              var innerHTML = container.innerHTML;
+              if ('!del' === word) {
+                container.innerHTML = innerHTML.slice(0, innerHTML.length - 1);
+              } else {
+                container.innerHTML = innerHTML + '' + word;
+              }
+            }
+            function write (words, index) {
+              var word = words.shift();
+              if (!word) return console.log('Finish Hitokoto');
+              word = buildWord(word, ++index);
+              typing(word, true, write.bind(this, words, index));
+            }
+            function typing (words, type, callback) {
+              setTimeout(() => {
+                var word = words.shift();
+                word ? typing(words, '!del' !== word, callback) : callback();
+                writeWord(word || '');
+              }, type ? delay : delay * 0.4);
+            }
+            write(strs, 0);
+          }
+        }
+        win.TypeWriter = TypeWriter;
+      })(window);
+      function uuid() {
+        var s = [];
+        var hexDigits = "0123456789abcdef";
+        for (var i = 0; i < 36; i++) {
+          s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+        }
+        s[14] = "4";
+        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
+        s[8] = s[13] = s[18] = s[23] = "-";
+        var uuid = s.join("");
+        return uuid;
+      }
+    </script>
+    <script>
+      var yan = document.querySelector('#typing');
+      var $ = mdui.$;
+      var c = document.cookie;
+      if(c == '') {
+        document.cookie=`uuid=${uuid}`;
+        c = document.cookie;
+      }
+      c = c.split('=')[1];
+      var n = Math.floor(Math.random() * 12);
+      if(n ==0) n++;
+      var pic = document.getElementById('pic');
+      pic.src = `https://hudaye.work/img/covers/${n}.jpg`
+      /*
+      var writer = new TypeWriter({
+        container: yan,
+        strs: ['学而时习之，不亦说乎？有朋自远方来，不亦乐乎？人不知，而不愠，不亦君子乎？-- 「孔子」'],
+        delay: 200
+      });
+      */
+      function hitokoto() {
+        yan.innerHTML = '';
+        $.ajax({
+            method: 'GET',
+            url: 'https://v1.hitokoto.cn/',
+            success: function (data){
+              var j = JSON.parse(data);
+              var w = new TypeWriter({
+                container: yan,
+                strs: [`${j.hitokoto} -- 「${j.from}」`],
+                delay: 200
+              });
+            }
+          })
+      }
+      hitokoto();
+      var r_ = self.setInterval("hitokoto()",12000);
+      function like() {
+        document.getElementById("like").classList.add("mdui-text-color-pink");
+      }
+      /*
+      function like(){
+        if(!like) {
+          $.ajax({
+            method: 'GET',
+            url: 'https://black-heart-4361.hudaye.workers.dev/like/' + c,
+            success: function (data){
+              
+            }
+          })
+        }
+        else {
+
+        }
+      }
+      */
+    </script>
+  </body>
+</html>
